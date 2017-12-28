@@ -20,7 +20,6 @@ pub struct LevelScene {
 
 impl LevelScene {
     pub fn new(ctx: &mut ggez::Context, world: &mut World) -> Self {
-        // let kiwi = graphics::Image::new(ctx, "/images/kiwi.png").unwrap();
         let kiwi = world.assets.get::<world::Image>(&warmy::Key::new("images/kiwi.png"), ctx)
             .unwrap();
         LevelScene { 

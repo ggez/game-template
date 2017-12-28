@@ -52,22 +52,11 @@ impl<C> warmy::Load<C> for TestAsset {
         where P: AsRef<path::Path>
     {
         debug!(log::LOG, "Attempting to load: {:?}", path.as_ref());
-        // This prints: Attempting to load: "/home/srv/hg/icefox/games/rk2/resources/foothing"
-        // So we want to take it, rip off the prefix, and shove it into the ggez loading functions.
-        // The assumption is that the warmy store root WILL exist in the ggez root.
         let ggez_path = warmy_to_ggez_path(path.as_ref(), store);
         debug!(log::LOG, "ggez path is now: {:?}", ggez_path);
         Ok(TestAsset.into())
     }
 }
-
-
-// 23:19 < Icefoz> Hmmmm.
-// 23:21 < Icefoz> Making warmy work with ggez is going to take a little messing with warmy to make it take a loader context type,
-// 23:22 < Icefoz> And then a little more messing around to make an event loop where the ggez Context is stored as Rc<RefCell<T>>
-//                 instead of &mut T.
-// 23:22 < Icefoz> How troublesome!
-// 23:23 < Icefoz> Alas I might be better off just using a load-everything-up-front asset store and occasionally polling for changes.
 
 pub struct Image(pub ggez::graphics::Image);
 impl warmy::Load<ggez::Context> for Image {
@@ -76,15 +65,10 @@ impl warmy::Load<ggez::Context> for Image {
         where P: AsRef<path::Path>
     {
         debug!(log::LOG, "Attempting to load: {:?}", path.as_ref());
-        // This prints: Attempting to load: "/home/srv/hg/icefox/games/rk2/resources/foothing"
-        // So we want to take it, rip off the prefix, and shove it into the ggez loading functions.
-        // The assumption is that the warmy store root WILL exist in the ggez root.
         let ggez_path = warmy_to_ggez_path(path.as_ref(), store);
         graphics::Image::new(ctx, &ggez_path)
             .map(|x| warmy::Loaded::from(Image(x)))
             .map_err(|e| GgezError::new(e).compat())
-        // debug!(log::LOG, "ggez path is now: {:?}", ggez_path);
-        // Ok(TestAsset.into())
     }
 }
 
@@ -105,11 +89,6 @@ impl<'a> specs::System<'a> for MovementSystem {
         // The `.join()` combines multiple components,
         // so we only access those entities which have
         // both of them.
-
-        // This joins the component storages for Position
-        // and Velocity together; it's also possible to do this
-        // in parallel using rayon's `ParallelIterator`s.
-        // See `ParJoin` for more.
         for (pos, motion) in (&mut pos, &motion).join() {
             pos.0 += motion.velocity;
         }

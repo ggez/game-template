@@ -33,27 +33,6 @@ pub struct Shot {
     pub damage: u32,
 }
 
-
-// #[derive(Clone, Debug, Component)]
-// #[component(VecStorage)]
-// pub struct CImage(pub asset::AssetHandle);
-// impl specs::Component for CImage {
-//     type Storage = specs::VecStorage<CImage>;
-// }
-
-// pub struct CCamera {
-//     pub c: camera::Camera,
-// }
-// impl specs::Component for CCamera {
-//     type Storage = specs::HashMapStorage<CCamera>;
-// }
-
-// impl CCamera {
-//     pub fn new(screen_width: u32, screen_height: u32) -> Self {
-//         CCamera { c: camera::Camera::new(screen_width, screen_height, 40.0, 30.0) }
-//     }
-// }
-
 #[derive(Clone, Debug, Component)]
 #[component(HashMapStorage)]
 pub struct CBackgroundScroller {

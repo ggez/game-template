@@ -1,6 +1,3 @@
-// `error_chain!` can recurse deeply
-#![recursion_limit = "1024"]
-
 extern crate ggez;
 extern crate ggez_goodies;
 extern crate specs;
@@ -60,9 +57,6 @@ impl MainState {
 
 impl EventHandler for MainState {
     fn update(&mut self, _ctx: &mut Context) -> GameResult<()> {
-        // println!("Vert axis: {}", self.input_manager.get_axis(input::Axis::Vert));
-        // println!("Horz axis: {}", self.input_manager.get_axis(input::Axis::Horz));
-        // println!("Button: {}", self.input_manager.get_button_pressed(input::Button::Fire));
         // TODO: update timing properly
         self.scenes.update();
 
@@ -77,7 +71,6 @@ impl EventHandler for MainState {
     }
 
     fn key_down_event(&mut self, ctx: &mut Context, keycode: Keycode, _keymod: Mod, _repeat: bool) {
-        // self.input.update_keydown(keycode);
         if let Some(ev) = self.input_binding.resolve(keycode) {
             self.scenes.input(ev, true);
         }
@@ -96,9 +89,9 @@ impl EventHandler for MainState {
 use std::env;
 
 pub fn main() {
-    let mut cb = ContextBuilder::new("rk2", "noctis-productions")
+    let mut cb = ContextBuilder::new("game-template", "ggez")
         .window_setup(conf::WindowSetup::default()
-                      .title("RK2")
+                      .title("game-template")
         )
         .window_mode(conf::WindowMode::default()
                      .dimensions(800, 600)
