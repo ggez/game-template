@@ -1,3 +1,6 @@
+//! Game setup andvery basic main loop.
+//! All the actual work gets done in the Scene.
+
 extern crate ggez;
 extern crate ggez_goodies;
 extern crate specs;
@@ -22,7 +25,7 @@ use ggez::graphics;
 use ggez::timer;
 // use ggez_goodies::camera;
 use ggez_goodies::input as ginput;
-use ggez_goodies::scene;
+//use ggez_goodies::scene;
 
 use std::path;
 
@@ -56,9 +59,11 @@ impl MainState {
 }
 
 impl EventHandler for MainState {
-    fn update(&mut self, _ctx: &mut Context) -> GameResult<()> {
-        // TODO: update timing properly
-        self.scenes.update();
+    fn update(&mut self, ctx: &mut Context) -> GameResult<()> {
+        const DESIRED_FPS: u32 = 60;
+        while timer::check_update_time(ctx, DESIRED_FPS) {
+            self.scenes.update();
+        }
 
         Ok(())
     }
@@ -70,14 +75,14 @@ impl EventHandler for MainState {
         Ok(())
     }
 
-    fn key_down_event(&mut self, ctx: &mut Context, keycode: Keycode, _keymod: Mod, _repeat: bool) {
+    fn key_down_event(&mut self, _ctx: &mut Context, keycode: Keycode, _keymod: Mod, _repeat: bool) {
         if let Some(ev) = self.input_binding.resolve(keycode) {
             self.scenes.input(ev, true);
         }
     }
 
 
-    fn key_up_event(&mut self, ctx: &mut Context, keycode: Keycode, _keymod: Mod, _repeat: bool) {
+    fn key_up_event(&mut self, _ctx: &mut Context, keycode: Keycode, _keymod: Mod, _repeat: bool) {
 
         if let Some(ev) = self.input_binding.resolve(keycode) {
             self.scenes.input(ev, false);
@@ -85,8 +90,6 @@ impl EventHandler for MainState {
     }
 }
 
-
-use std::env;
 
 pub fn main() {
     let mut cb = ContextBuilder::new("game-template", "ggez")
@@ -120,5 +123,5 @@ pub fn main() {
         println!("Error encountered: {}", e);
     } else {
         println!("Game exited cleanly.");
-    }   
+    }
 }

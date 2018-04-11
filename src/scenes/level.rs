@@ -1,7 +1,7 @@
 use ggez;
 use ggez::graphics;
 use ggez_goodies::scene;
-use ggez_goodies::input as ginput;
+//use ggez_goodies::input as ginput;
 use specs::Join;
 use warmy;
 
@@ -32,7 +32,11 @@ impl LevelScene {
 impl scene::Scene<World, input::InputEvent> for LevelScene {
     fn update(&mut self, gameworld: &mut World) -> FSceneSwitch {
         gameworld.specs_dispatcher.dispatch(&mut gameworld.specs_world.res);
-        scene::SceneSwitch::None
+        if self.done {
+            scene::SceneSwitch::Pop
+        } else {
+            scene::SceneSwitch::None
+        }
     }
 
     fn draw(&mut self, gameworld: &mut World, ctx: &mut ggez::Context) -> ggez::GameResult<()> {
@@ -47,7 +51,7 @@ impl scene::Scene<World, input::InputEvent> for LevelScene {
         "LevelScene"
     }
 
-    fn input(&mut self, gameworld: &mut World, ev: input::InputEvent, started: bool) {
+    fn input(&mut self, _gameworld: &mut World, ev: input::InputEvent, _started: bool) {
         debug!(log::LOG, "Input: {:?}", ev);
     }
 

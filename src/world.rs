@@ -1,3 +1,8 @@
+//! This file defines the `World`,
+//! as well as some handy utility methods and structs.
+//! The `World` contains shared state that will be available
+//! to every `Scene`: specs objects, input state, asset cache.
+
 use ggez;
 use ggez_goodies::input as ginput;
 use ggez::graphics;
@@ -23,8 +28,8 @@ pub struct GgezError {
     err: ggez::GameError
 }
 
-impl GgezError {
-    fn new(err: ggez::GameError) -> Self {
+impl From<ggez::GameError> for GgezError {
+    fn from(err: ggez::GameError) -> Self {
         Self {
             err
         }
@@ -68,13 +73,13 @@ impl warmy::Load<ggez::Context> for Image {
         let ggez_path = warmy_to_ggez_path(path.as_ref(), store);
         graphics::Image::new(ctx, &ggez_path)
             .map(|x| warmy::Loaded::from(Image(x)))
-            .map_err(|e| GgezError::new(e).compat())
+            .map_err(|e| GgezError::from(e).compat())
     }
 }
 
 pub struct World {
     pub assets: warmy::Store<ggez::Context>,
-    pub input_manager: ginput::InputManager<input::Axis, input::Button>,
+    pub input_manager: input::InputState,
     pub specs_world: specs::World,
     pub specs_dispatcher: specs::Dispatcher<'static, 'static>,
 }
@@ -133,13 +138,13 @@ impl World {
 
         // ...oooooh, the dispatcher should go in the Scene
         // so every scene can have its own set of systems!
-        let mut dispatcher = specs::DispatcherBuilder::new()
+        let dispatcher = specs::DispatcherBuilder::new()
             .add(MovementSystem, "sys_movement", &[])
             .build();
 
         Self {
             assets: store,
-            input_manager: ginput::InputManager::new(),
+            input_manager: ginput::InputState::new(),
             specs_world: w,
             specs_dispatcher: dispatcher,
         }

@@ -1,17 +1,16 @@
 [package]
-name = "rk2"
+name = "ggez_game_template"
 version = "0.1.0"
-authors = ["Simon Heath <simon@noctis-productions.com>"]
-license = "..."
+authors = ["Simon Heath <icefoxen@gmail.com>"]
+license = "MIT OR Apache-2.0"
 readme = "README.md"
 
 [dependencies]
-
-ggez = "0.4.0-rc.1"
+ggez = "0.4"
 ggez-goodies = { git = "https://github.com/ggez/ggez-goodies", branch = "master" }
 #ggez-goodies = { path = "/home/icefox/src/ggez-goodies" }
 
-lazy_static = "0.2"
+lazy_static = "1.0"
 slog = "2.0"
 slog-term = "2.0"
 slog-async = "2.0"

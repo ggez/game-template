@@ -1,10 +1,8 @@
-use ggez::nalgebra as na;
+//use ggez::nalgebra as na;
 use ggez::graphics::*;
 use specs::*;
-// use ggez_goodies::asset;
-// use ggez_goodies::camera;
 
-use util::*;
+//use util::*;
 
 
 /// ///////////////////////////////////////////////////////////////////////
@@ -40,7 +38,7 @@ pub struct CBackgroundScroller {
 }
 
 impl CBackgroundScroller {
-    pub fn new() -> Self {
-        CBackgroundScroller { scroll_speed: Vector2::new(0.0, -0.01) }
-    }
+    //pub fn new() -> Self {
+    //    CBackgroundScroller { scroll_speed: Vector2::new(0.0, -0.01) }
+    //}
 }
