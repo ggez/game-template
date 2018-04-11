@@ -13,7 +13,6 @@ pub enum Axis {
     Horz,
 }
 
-
 // pub type InputBinding = input::InputBinding<Axis, Button>;
 
 pub type InputEvent = input::InputEffect<Axis, Button>;

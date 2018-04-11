@@ -4,14 +4,12 @@ use specs::*;
 
 //use util::*;
 
-
 /// ///////////////////////////////////////////////////////////////////////
 /// Components
 /// ///////////////////////////////////////////////////////////////////////
 #[derive(Clone, Debug, Component)]
 #[component(VecStorage)]
 pub struct Position(pub Point2);
-
 
 #[derive(Clone, Debug, Component)]
 #[component(VecStorage)]

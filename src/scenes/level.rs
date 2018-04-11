@@ -17,12 +17,13 @@ pub struct LevelScene {
     kiwi: warmy::Res<world::Image>,
 }
 
-
 impl LevelScene {
     pub fn new(ctx: &mut ggez::Context, world: &mut World) -> Self {
-        let kiwi = world.assets.get::<world::Image>(&warmy::Key::new("images/kiwi.png"), ctx)
+        let kiwi = world
+            .assets
+            .get::<world::Image>(&warmy::Key::new("images/kiwi.png"), ctx)
             .unwrap();
-        LevelScene { 
+        LevelScene {
             done: false,
             kiwi: kiwi,
         }
@@ -31,7 +32,9 @@ impl LevelScene {
 
 impl scene::Scene<World, input::InputEvent> for LevelScene {
     fn update(&mut self, gameworld: &mut World) -> FSceneSwitch {
-        gameworld.specs_dispatcher.dispatch(&mut gameworld.specs_world.res);
+        gameworld
+            .specs_dispatcher
+            .dispatch(&mut gameworld.specs_world.res);
         if self.done {
             scene::SceneSwitch::Pop
         } else {
@@ -54,9 +57,4 @@ impl scene::Scene<World, input::InputEvent> for LevelScene {
     fn input(&mut self, _gameworld: &mut World, ev: input::InputEvent, _started: bool) {
         debug!(log::LOG, "Input: {:?}", ev);
     }
-
-    fn draw_previous(&self) -> bool {
-         false
-    }
 }
-

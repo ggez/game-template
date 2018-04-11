@@ -20,19 +20,15 @@ use input;
 use log;
 use components::*;
 
-
-
 #[derive(Debug, Fail)]
 #[fail(display = "ggez error: {:?}", err)]
 pub struct GgezError {
-    err: ggez::GameError
+    err: ggez::GameError,
 }
 
 impl From<ggez::GameError> for GgezError {
     fn from(err: ggez::GameError) -> Self {
-        Self {
-            err
-        }
+        Self { err }
     }
 }
 
@@ -53,8 +49,13 @@ struct TestAsset;
 
 impl<C> warmy::Load<C> for TestAsset {
     type Error = failure::Compat<GgezError>;
-    fn from_fs<P>(path: P, store: &mut warmy::Store<C>, _ctx: &mut C) -> Result<warmy::Loaded<Self>, Self::Error>
-        where P: AsRef<path::Path>
+    fn from_fs<P>(
+        path: P,
+        store: &mut warmy::Store<C>,
+        _ctx: &mut C,
+    ) -> Result<warmy::Loaded<Self>, Self::Error>
+    where
+        P: AsRef<path::Path>,
     {
         debug!(log::LOG, "Attempting to load: {:?}", path.as_ref());
         let ggez_path = warmy_to_ggez_path(path.as_ref(), store);
@@ -66,8 +67,13 @@ impl<C> warmy::Load<C> for TestAsset {
 pub struct Image(pub ggez::graphics::Image);
 impl warmy::Load<ggez::Context> for Image {
     type Error = failure::Compat<GgezError>;
-    fn from_fs<P>(path: P, store: &mut warmy::Store<ggez::Context>, ctx: &mut ggez::Context) -> Result<warmy::Loaded<Self>, Self::Error>
-        where P: AsRef<path::Path>
+    fn from_fs<P>(
+        path: P,
+        store: &mut warmy::Store<ggez::Context>,
+        ctx: &mut ggez::Context,
+    ) -> Result<warmy::Loaded<Self>, Self::Error>
+    where
+        P: AsRef<path::Path>,
     {
         debug!(log::LOG, "Attempting to load: {:?}", path.as_ref());
         let ggez_path = warmy_to_ggez_path(path.as_ref(), store);
@@ -84,11 +90,13 @@ pub struct World {
     pub specs_dispatcher: specs::Dispatcher<'static, 'static>,
 }
 
-
 struct MovementSystem;
 
 impl<'a> specs::System<'a> for MovementSystem {
-    type SystemData = (specs::WriteStorage<'a, Position>, specs::ReadStorage<'a, Motion>);
+    type SystemData = (
+        specs::WriteStorage<'a, Position>,
+        specs::ReadStorage<'a, Motion>,
+    );
 
     fn run(&mut self, (mut pos, motion): Self::SystemData) {
         // The `.join()` combines multiple components,
@@ -102,7 +110,6 @@ impl<'a> specs::System<'a> for MovementSystem {
 
 impl World {
     pub fn new(ctx: &mut ggez::Context, resource_dir: Option<path::PathBuf>) -> Self {
-
         // We try to bridge the gap between ggez and warmy path
         // handling here; ggez assumes its own absolute paths, warmy
         // assumes system-absolute paths; so, we make warmy look in
@@ -111,15 +118,17 @@ impl World {
         // dir.
         let resource_pathbuf: path::PathBuf = match resource_dir {
             Some(s) => s,
-            None => ctx.filesystem.get_resources_dir().to_owned()
+            None => ctx.filesystem.get_resources_dir().to_owned(),
         };
-        info!(log::LOG, "Setting up resource path path: {:?}", resource_pathbuf);
-        let opt = warmy::StoreOpt::default()
-            .set_root(resource_pathbuf);
+        info!(
+            log::LOG,
+            "Setting up resource path path: {:?}",
+            resource_pathbuf
+        );
+        let opt = warmy::StoreOpt::default().set_root(resource_pathbuf);
         let mut store = warmy::Store::new(opt)
             .expect("Could not create asset store?  Does the directory exist?");
         let _t = store.get::<TestAsset>(&warmy::Key::new("foothing"), ctx);
-
 
         let mut w = specs::World::new();
         w.register::<Position>();
@@ -127,12 +136,11 @@ impl World {
         w.register::<Shot>();
         w.register::<Player>();
 
-
         w.create_entity()
             .with(Position(Point2::new(0.0, 0.0)))
             .with(Motion {
                 velocity: Vector2::new(1.0, 1.0),
-                acceleration: Vector2::new(0.0, 0.0)
+                acceleration: Vector2::new(0.0, 0.0),
             })
             .build();
 
