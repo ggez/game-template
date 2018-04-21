@@ -1,4 +1,4 @@
-//! Game setup andvery basic main loop.
+//! Game setup and very basic main loop.
 //! All the actual work gets done in the Scene.
 
 #[macro_use]

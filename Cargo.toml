@@ -18,4 +18,4 @@ failure = "0.1"
 specs = "0.10"
 specs-derive = "0.1"
 #warmy = "0.3"
-warmy = { git = "https://github.com/icefoxen/warmy", branch = "load-with-context" }
+warmy = { git = "https://github.com/icefoxen/warmy", branch = "load-with-context2" }
