@@ -39,16 +39,18 @@ impl From<ggez::GameError> for GgezError {
 /// and returns a path that can be used to load
 /// the targeted thing inside ggez.
 fn warmy_to_ggez_path<C>(path: &path::Path, store: &warmy::Storage<C>) -> path::PathBuf {
-    assert!(path.is_absolute());
-    let stripped_path = path.strip_prefix(store.root())
-        .expect("path is outside of the warmy store?");
-    path::Path::new("/").join(stripped_path)
+    // assert!(path.is_absolute());
+    println!("path is: {:?}, store is: {:?}", path, store.root());
+    // let stripped_path = path.strip_prefix(store.root())
+    //     .expect("path is outside of the warmy store?");
+    // path::Path::new("/").join(stripped_path)
+    path.into()
 }
 
 struct TestAsset;
 
 impl<C> warmy::Load<C> for TestAsset {
-    type Key = warmy::PathKey;
+    type Key = warmy::LogicalKey;
     type Error = failure::Compat<GgezError>;
     fn load(
         key: Self::Key,
@@ -56,8 +58,8 @@ impl<C> warmy::Load<C> for TestAsset {
         store: &mut warmy::Storage<C>
     ) -> Result<warmy::Loaded<Self>, Self::Error>
     {
-        debug!(log::LOG, "Attempting to load: {:?}", key.as_path());
-        let ggez_path = warmy_to_ggez_path(key.as_path(), store);
+        debug!(log::LOG, "Attempting to load: {:?}", key);
+        let ggez_path = warmy_to_ggez_path(path::Path::new(key.as_str()), store);
         debug!(log::LOG, "ggez path is now: {:?}", ggez_path);
         Ok(TestAsset.into())
     }
@@ -65,7 +67,7 @@ impl<C> warmy::Load<C> for TestAsset {
 
 pub struct Image(pub ggez::graphics::Image);
 impl warmy::Load<ggez::Context> for Image {
-    type Key = warmy::PathKey;
+    type Key = warmy::LogicalKey;
     type Error = failure::Compat<GgezError>;
     fn load(
         key: Self::Key,
@@ -73,8 +75,8 @@ impl warmy::Load<ggez::Context> for Image {
         store: &mut warmy::Storage<ggez::Context>,
     ) -> Result<warmy::Loaded<Self>, Self::Error>
     {
-        debug!(log::LOG, "Attempting to load: {:?}", key.as_path());
-        let ggez_path = warmy_to_ggez_path(key.as_path(), store);
+        debug!(log::LOG, "Attempting to load: {:?}", key.as_str());
+        let ggez_path = warmy_to_ggez_path(path::Path::new(key.as_str()), store);
         graphics::Image::new(ctx, &ggez_path)
             .map(|x| warmy::Loaded::from(Image(x)))
             .map_err(|e| GgezError::from(e).compat())
@@ -124,10 +126,10 @@ impl World {
             resource_pathbuf
         );
         let opt = warmy::StoreOpt::default().set_root(resource_pathbuf);
-        let mut store = warmy::Store::new(opt)
+        let store = warmy::Store::new(opt)
             .expect("Could not create asset store?  Does the directory exist?");
-        let key = warmy::Key::path("/etc").expect("fjdklasfjsld");
-        let _t = store.get::<TestAsset>(&key, ctx);
+        // let key = warmy::Key::logical("/images/kiwi.png");
+        // let _t = store.get::<TestAsset>(&key, ctx);
 
         let mut w = specs::World::new();
         w.register::<Position>();

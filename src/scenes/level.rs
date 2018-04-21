@@ -21,7 +21,7 @@ impl LevelScene {
     pub fn new(ctx: &mut ggez::Context, world: &mut World) -> Self {
         let kiwi = world
             .assets
-            .get::<world::Image>(&warmy::Key::path("images/kiwi.png").unwrap(), ctx)
+            .get::<world::Image>(&warmy::Key::logical("/images/kiwi.png"), ctx)
             .unwrap();
         LevelScene {
             done: false,
