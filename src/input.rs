@@ -14,11 +14,13 @@ pub enum Axis {
     Horz,
 }
 
-// pub type InputBinding = input::InputBinding<Axis, Button>;
 
+pub type InputBinding = input::InputBinding<Axis, Button>;
 pub type InputEvent = input::InputEffect<Axis, Button>;
 pub type InputState = input::InputState<Axis, Button>;
 
+
+/// Create the default keybindings for our input state.
 pub fn create_input_binding() -> input::InputBinding<Axis, Button> {
     input::InputBinding::new()
         .bind_key_to_axis(Keycode::Up, Axis::Vert, true)

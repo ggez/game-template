@@ -44,7 +44,7 @@ mod util;
 
 pub struct MainState {
     scenes: scenes::FSceneStack,
-    input_binding: ginput::InputBinding<input::Axis, input::Button>,
+    input_binding: input::InputBinding,
 }
 
 impl MainState {
