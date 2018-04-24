@@ -24,8 +24,6 @@ use ggez::event::*;
 use ggez::graphics;
 use ggez::timer;
 // use ggez_goodies::camera;
-use ggez_goodies::input as ginput;
-//use ggez_goodies::scene;
 
 use std::path;
 
@@ -49,8 +47,8 @@ pub struct MainState {
 
 impl MainState {
     pub fn new(resource_dir: Option<path::PathBuf>, ctx: &mut Context) -> Self {
-        let mut scenestack =
-            scenes::FSceneStack::new(ctx, |ctx| world::World::new(ctx, resource_dir.clone()));
+        let world = world::World::new(ctx, resource_dir.clone());
+        let mut scenestack = scenes::FSceneStack::new(ctx, world);
         let initial_scene = Box::new(scenes::level::LevelScene::new(ctx, &mut scenestack.world));
         scenestack.push(initial_scene);
         MainState {
