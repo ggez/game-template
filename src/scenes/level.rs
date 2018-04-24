@@ -54,7 +54,10 @@ impl scene::Scene<World, input::InputEvent> for LevelScene {
         "LevelScene"
     }
 
-    fn input(&mut self, _gameworld: &mut World, ev: input::InputEvent, _started: bool) {
+    fn input(&mut self, gameworld: &mut World, ev: input::InputEvent, _started: bool) {
         debug!(log::LOG, "Input: {:?}", ev);
+        if gameworld.input.get_button_pressed(input::Button::Menu) {
+            self.done = true;
+        }
     }
 }
