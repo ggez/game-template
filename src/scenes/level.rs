@@ -9,19 +9,19 @@ use log;
 use input;
 use components as c;
 use scenes::*;
-use world;
+use resources;
 use world::World;
 
 pub struct LevelScene {
     done: bool,
-    kiwi: warmy::Res<world::Image>,
+    kiwi: warmy::Res<resources::Image>,
 }
 
 impl LevelScene {
     pub fn new(ctx: &mut ggez::Context, world: &mut World) -> Self {
         let kiwi = world
             .assets
-            .get::<world::Image>(&warmy::Key::logical("/images/kiwi.png"), ctx)
+            .get::<resources::Image>(&warmy::Key::logical("/images/kiwi.png"), ctx)
             .unwrap();
         LevelScene {
             done: false,

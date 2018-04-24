@@ -5,83 +5,19 @@
 
 use ggez;
 use ggez_goodies::input as ginput;
-use ggez::graphics;
 use ggez::graphics::{Point2, Vector2};
 use specs;
-use specs::Join;
 
 use warmy;
-use failure;
-use failure::Fail;
 
 use std::path;
 
+
+use resources::*;
 use input;
 use log;
 use components::*;
-
-#[derive(Debug, Fail)]
-#[fail(display = "ggez error: {:?}", err)]
-pub struct GgezError {
-    err: ggez::GameError,
-}
-
-impl From<ggez::GameError> for GgezError {
-    fn from(err: ggez::GameError) -> Self {
-        Self { err }
-    }
-}
-
-/// warmy deals with absolute paths.
-/// ggez deals with sorta faux-absolute paths.
-/// This takes an absolute path, and a warmy store
-/// that aims at a ggez resources directory,
-/// and returns a path that can be used to load
-/// the targeted thing inside ggez.
-fn warmy_to_ggez_path<C>(path: &path::Path, store: &warmy::Storage<C>) -> path::PathBuf {
-    // assert!(path.is_absolute());
-    println!("path is: {:?}, store is: {:?}", path, store.root());
-    // let stripped_path = path.strip_prefix(store.root())
-    //     .expect("path is outside of the warmy store?");
-    // path::Path::new("/").join(stripped_path)
-    path.into()
-}
-
-struct TestAsset;
-
-impl<C> warmy::Load<C> for TestAsset {
-    type Key = warmy::LogicalKey;
-    type Error = failure::Compat<GgezError>;
-    fn load(
-        key: Self::Key,
-        _ctx: &mut C,
-        store: &mut warmy::Storage<C>
-    ) -> Result<warmy::Loaded<Self>, Self::Error>
-    {
-        debug!(log::LOG, "Attempting to load: {:?}", key);
-        let ggez_path = warmy_to_ggez_path(path::Path::new(key.as_str()), store);
-        debug!(log::LOG, "ggez path is now: {:?}", ggez_path);
-        Ok(TestAsset.into())
-    }
-}
-
-pub struct Image(pub ggez::graphics::Image);
-impl warmy::Load<ggez::Context> for Image {
-    type Key = warmy::LogicalKey;
-    type Error = failure::Compat<GgezError>;
-    fn load(
-        key: Self::Key,
-        ctx: &mut ggez::Context,
-        store: &mut warmy::Storage<ggez::Context>,
-    ) -> Result<warmy::Loaded<Self>, Self::Error>
-    {
-        debug!(log::LOG, "Attempting to load: {:?}", key.as_str());
-        let ggez_path = warmy_to_ggez_path(path::Path::new(key.as_str()), store);
-        graphics::Image::new(ctx, &ggez_path)
-            .map(|x| warmy::Loaded::from(Image(x)))
-            .map_err(|e| GgezError::from(e).compat())
-    }
-}
+use systems::*;
 
 pub struct World {
     pub assets: warmy::Store<ggez::Context>,
@@ -90,23 +26,6 @@ pub struct World {
     pub specs_dispatcher: specs::Dispatcher<'static, 'static>,
 }
 
-struct MovementSystem;
-
-impl<'a> specs::System<'a> for MovementSystem {
-    type SystemData = (
-        specs::WriteStorage<'a, Position>,
-        specs::ReadStorage<'a, Motion>,
-    );
-
-    fn run(&mut self, (mut pos, motion): Self::SystemData) {
-        // The `.join()` combines multiple components,
-        // so we only access those entities which have
-        // both of them.
-        for (pos, motion) in (&mut pos, &motion).join() {
-            pos.0 += motion.velocity;
-        }
-    }
-}
 
 impl World {
     pub fn new(ctx: &mut ggez::Context, resource_dir: Option<path::PathBuf>) -> Self {
@@ -126,10 +45,10 @@ impl World {
             resource_pathbuf
         );
         let opt = warmy::StoreOpt::default().set_root(resource_pathbuf);
-        let store = warmy::Store::new(opt)
+        let mut store = warmy::Store::new(opt)
             .expect("Could not create asset store?  Does the directory exist?");
-        // let key = warmy::Key::logical("/images/kiwi.png");
-        // let _t = store.get::<TestAsset>(&key, ctx);
+        let key = warmy::Key::logical("random_asset_name");
+        let _t = store.get::<TestAsset>(&key, ctx);
 
         let mut w = specs::World::new();
         w.register::<Position>();

@@ -29,12 +29,16 @@ use ggez_goodies::input as ginput;
 
 use std::path;
 
+// Modules that define actual content
 mod components;
-mod input;
 mod scenes;
 mod systems;
 mod world;
 
+// Modules that define utility stuff.
+mod error;
+mod input;
+mod resources;
 mod log;
 mod util;
 
