@@ -13,7 +13,6 @@ use warmy;
 use std::path;
 
 use input;
-use log;
 use components::*;
 use systems::*;
 
@@ -52,7 +51,6 @@ impl World {
             None => ctx.filesystem.get_resources_dir().to_owned(),
         };
         info!(
-            log::LOG,
             "Setting up resource path: {:?}",
             resource_pathbuf
         );

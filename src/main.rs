@@ -6,11 +6,9 @@ extern crate failure;
 extern crate ggez;
 extern crate ggez_goodies;
 #[macro_use]
-extern crate lazy_static;
-#[macro_use]
-extern crate slog;
-extern crate slog_async;
-extern crate slog_term;
+extern crate log;
+extern crate fern;
+extern crate chrono;
 extern crate specs;
 #[macro_use]
 extern crate specs_derive;
@@ -37,9 +35,53 @@ mod world;
 mod error;
 mod input;
 mod resources;
-mod log;
+//mod log;
 mod util;
 
+
+/// Function to set up logging.
+/// We write all debug messages (which will be a log)
+/// to both stdout and a log file.
+/// See the ggez logging example for a more sophisticated
+/// setup, we should incorporate some of that here.
+///
+/// TODO: Don't output colors to the log file.
+fn setup_logger() -> Result<(), fern::InitError> {
+    use fern::colors::{Color, ColoredLevelConfig};
+    // I'm used to Python's logging colors and format,
+    // so let's do something like that.
+    let colors = ColoredLevelConfig::default()
+        .info(Color::Green)
+        .debug(Color::BrightMagenta)
+        .trace(Color::BrightBlue);
+    fern::Dispatch::new()
+        .format(move |out, message, record| {
+            out.finish(format_args!(
+                "[{}][{:<14}][{}] {}",
+                chrono::Local::now().format("%Y-%m-%d %H:%M:%S"),
+                colors.color(record.level()).to_string(),
+                record.target(),
+                message
+            ))
+        })
+        // gfx_device_gl is very chatty on info loglevel, so
+        // filter that a bit more strictly.
+        .level_for("gfx_device_gl", log::LevelFilter::Warn)
+        .level(log::LevelFilter::Debug)
+        .chain(std::io::stdout())
+        .chain(std::fs::OpenOptions::new()
+               .write(true)
+               .create(true)
+               .truncate(true)
+               .open("debug.log")?)
+        .apply()?;
+    Ok(())
+}
+
+/// Main game state.  This holds all our STUFF,
+/// but most of the actual game data are
+/// in `Scenes`, and the `FSceneStack` contains them
+/// plus global game state.
 pub struct MainState {
     scenes: scenes::FSceneStack,
     input_binding: input::InputBinding,
@@ -95,6 +137,8 @@ impl EventHandler for MainState {
 }
 
 pub fn main() {
+    setup_logger()
+        .expect("Could not set up logging!");
     let mut cb = ContextBuilder::new("game-template", "ggez")
         .window_setup(conf::WindowSetup::default().title("game-template"))
         .window_mode(conf::WindowMode::default().dimensions(800, 600));

@@ -9,7 +9,6 @@ use warmy;
 
 
 use error::*;
-use log;
 
 pub struct TestAsset;
 
@@ -22,7 +21,7 @@ impl<C> warmy::Load<C> for TestAsset {
         _store: &mut warmy::Storage<C>
     ) -> Result<warmy::Loaded<Self>, Self::Error>
     {
-        debug!(log::LOG, "Attempting to load: {:?}", key);
+        debug!("Attempting to load: {:?}", key);
         Ok(TestAsset.into())
     }
 }
@@ -37,7 +36,7 @@ impl warmy::Load<ggez::Context> for Image {
         _store: &mut warmy::Storage<ggez::Context>,
     ) -> Result<warmy::Loaded<Self>, Self::Error>
     {
-        debug!(log::LOG, "Attempting to load: {:?}", key.as_str());
+        debug!("Attempting to load: {:?}", key.as_str());
         let ggez_path = path::Path::new(key.as_str());
         graphics::Image::new(ctx, &ggez_path)
             .map(|x| warmy::Loaded::from(Image(x)))

@@ -5,7 +5,6 @@ use ggez_goodies::scene;
 use specs::Join;
 use warmy;
 
-use log;
 use input;
 use components as c;
 use scenes::*;
@@ -55,7 +54,7 @@ impl scene::Scene<World, input::InputEvent> for LevelScene {
     }
 
     fn input(&mut self, gameworld: &mut World, ev: input::InputEvent, _started: bool) {
-        debug!(log::LOG, "Input: {:?}", ev);
+        debug!("Input: {:?}", ev);
         if gameworld.input.get_button_pressed(input::Button::Menu) {
             self.done = true;
         }
