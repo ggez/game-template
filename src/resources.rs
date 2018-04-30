@@ -6,7 +6,6 @@ use failure::{self, Fail};
 use ggez::{self, audio, graphics};
 use warmy;
 
-
 use error::*;
 
 /// Warmy hands our `load()` method an absolute path, while ggez takes absolute
@@ -36,8 +35,7 @@ impl<C> warmy::Load<C> for TestAsset {
         key: Self::Key,
         _store: &mut warmy::Storage<C>,
         _ctx: &mut C,
-    ) -> Result<warmy::Loaded<Self>, Self::Error>
-    {
+    ) -> Result<warmy::Loaded<Self>, Self::Error> {
         debug!("Loading test asset: {:?}", key);
         Ok(TestAsset.into())
     }
@@ -53,8 +51,7 @@ impl warmy::Load<ggez::Context> for Image {
         key: Self::Key,
         store: &mut warmy::Storage<ggez::Context>,
         ctx: &mut ggez::Context,
-    ) -> Result<warmy::Loaded<Self>, Self::Error>
-    {
+    ) -> Result<warmy::Loaded<Self>, Self::Error> {
         let path = warmy_to_ggez_path(key.as_path(), store.root());
         debug!("Loading image {:?} from file {:?}", path, key.as_path());
         graphics::Image::new(ctx, path)
@@ -62,7 +59,6 @@ impl warmy::Load<ggez::Context> for Image {
             .map_err(|e| GgezError::from(e).compat())
     }
 }
-
 
 /// A wrapper for a ggez SoundData, so we can implement warmy's `Load` trait on it.
 #[derive(Debug, Clone)]
@@ -74,8 +70,7 @@ impl warmy::Load<ggez::Context> for SoundData {
         key: Self::Key,
         store: &mut warmy::Storage<ggez::Context>,
         ctx: &mut ggez::Context,
-    ) -> Result<warmy::Loaded<Self>, Self::Error>
-    {
+    ) -> Result<warmy::Loaded<Self>, Self::Error> {
         let path = warmy_to_ggez_path(key.as_path(), store.root());
         debug!("Loading sound {:?} from file {:?}", path, key.as_path());
 
@@ -98,8 +93,7 @@ impl warmy::Load<ggez::Context> for Font {
         key: Self::Key,
         store: &mut warmy::Storage<ggez::Context>,
         ctx: &mut ggez::Context,
-    ) -> Result<warmy::Loaded<Self>, Self::Error>
-    {
+    ) -> Result<warmy::Loaded<Self>, Self::Error> {
         let path = warmy_to_ggez_path(key.as_path(), store.root());
         debug!("Loading font {:?} from file {:?}", path, key.as_path());
 

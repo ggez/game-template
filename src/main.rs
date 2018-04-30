@@ -1,14 +1,14 @@
 //! Game setup and very basic main loop.
 //! All the actual work gets done in the Scene.
 
+extern crate chrono;
 #[macro_use]
 extern crate failure;
+extern crate fern;
 extern crate ggez;
 extern crate ggez_goodies;
 #[macro_use]
 extern crate log;
-extern crate fern;
-extern crate chrono;
 extern crate specs;
 #[macro_use]
 extern crate specs_derive;
@@ -21,7 +21,6 @@ use ggez::event;
 use ggez::event::*;
 use ggez::graphics;
 use ggez::timer;
-// use ggez_goodies::camera;
 
 use std::path;
 
@@ -35,9 +34,7 @@ mod world;
 mod error;
 mod input;
 mod resources;
-//mod log;
 mod util;
-
 
 /// Function to set up logging.
 /// We write all debug messages (which will be a log)
@@ -138,8 +135,7 @@ impl EventHandler for MainState {
 }
 
 pub fn main() {
-    setup_logger()
-        .expect("Could not set up logging!");
+    setup_logger().expect("Could not set up logging!");
     let mut cb = ContextBuilder::new("game-template", "ggez")
         .window_setup(conf::WindowSetup::default().title("game-template"))
         .window_mode(conf::WindowMode::default().dimensions(800, 600));

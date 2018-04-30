@@ -23,7 +23,6 @@ pub struct World {
     pub specs_dispatcher: specs::Dispatcher<'static, 'static>,
 }
 
-
 impl World {
     fn register_components(&mut self) {
         self.specs_world.register::<Position>();
@@ -38,7 +37,7 @@ impl World {
             .build();
         self.specs_dispatcher = dispatcher;
     }
-    
+
     pub fn new(ctx: &mut ggez::Context, resource_dir: Option<path::PathBuf>) -> Self {
         // We to bridge the gap between ggez and warmy path
         // handling here; ggez assumes its own absolute paths, warmy
@@ -50,23 +49,18 @@ impl World {
             Some(s) => s,
             None => ctx.filesystem.get_resources_dir().to_owned(),
         };
-        info!(
-            "Setting up resource path: {:?}",
-            resource_pathbuf
-        );
-        let opt = warmy::StoreOpt::default()
-            .set_root(resource_pathbuf);
+        info!("Setting up resource path: {:?}", resource_pathbuf);
+        let opt = warmy::StoreOpt::default().set_root(resource_pathbuf);
         let store = warmy::Store::new(opt)
             .expect("Could not create asset store?  Does the directory exist?");
 
         let w = specs::World::new();
-        
+
         // If we want the dispatcher can go in the Scene instead,
         // so every scene can have its own set of systems.
         // For now though, we make a dummy dispatcher that will
         // get replaced when we call `register_systems()`.
-        let dispatcher = specs::DispatcherBuilder::new()
-            .build();
+        let dispatcher = specs::DispatcherBuilder::new().build();
 
         let mut the_world = Self {
             assets: store,
@@ -79,7 +73,9 @@ impl World {
         the_world.register_systems();
 
         // Make a test entity.
-        the_world.specs_world.create_entity()
+        the_world
+            .specs_world
+            .create_entity()
             .with(Position(Point2::new(0.0, 0.0)))
             .with(Motion {
                 velocity: Vector2::new(1.0, 1.0),
@@ -87,8 +83,6 @@ impl World {
             })
             .build();
 
-
-        
         the_world
     }
 }

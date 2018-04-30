@@ -3,7 +3,6 @@ use specs::{self, Join};
 
 use components::*;
 
-
 pub struct MovementSystem;
 
 impl<'a> specs::System<'a> for MovementSystem {
