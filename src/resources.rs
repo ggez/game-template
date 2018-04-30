@@ -3,8 +3,7 @@
 use std::path;
 
 use failure::{self, Fail};
-use ggez;
-use ggez::graphics;
+use ggez::{self, audio, graphics};
 use warmy;
 
 
@@ -36,6 +35,7 @@ impl From<GKey> for warmy::key::DepKey {
 }
 
 /// Just a test asset that does nothing.
+#[derive(Debug, Copy, Clone)]
 pub struct TestAsset;
 
 impl<C> warmy::Load<C> for TestAsset {
@@ -52,7 +52,8 @@ impl<C> warmy::Load<C> for TestAsset {
     }
 }
 
-/// A ggez Image.
+/// A wrapper for a ggez Image, so we can implement warmy's `Load` trait on it.
+#[derive(Debug, Clone)]
 pub struct Image(pub graphics::Image);
 impl warmy::Load<ggez::Context> for Image {
     type Key = GKey;
@@ -66,6 +67,48 @@ impl warmy::Load<ggez::Context> for Image {
         debug!("Attempting to load: {:?}", key);
         graphics::Image::new(ctx, key.0)
             .map(|x| warmy::Loaded::from(Image(x)))
+            .map_err(|e| GgezError::from(e).compat())
+    }
+}
+
+
+/// A wrapper for a ggez SoundData, so we can implement warmy's `Load` trait on it.
+#[derive(Debug, Clone)]
+pub struct SoundData(pub audio::SoundData);
+impl warmy::Load<ggez::Context> for SoundData {
+    type Key = GKey;
+    type Error = failure::Compat<GgezError>;
+    fn load(
+        key: Self::Key,
+        _store: &mut warmy::Storage<ggez::Context>,
+        ctx: &mut ggez::Context,
+    ) -> Result<warmy::Loaded<Self>, Self::Error>
+    {
+        debug!("Attempting to load: {:?}", key);
+        audio::SoundData::new(ctx, key.0)
+            .map(|x| warmy::Loaded::from(SoundData(x)))
+            .map_err(|e| GgezError::from(e).compat())
+    }
+}
+
+/// A wrapper for a ggez Font, so we can implement warmy's `Load` trait on it.
+///
+/// Currently it just forces the font size to 12 pt; we should implement a specific
+/// key type for it that includes a font size.
+#[derive(Debug, Clone)]
+pub struct Font(pub graphics::Font);
+impl warmy::Load<ggez::Context> for Font {
+    type Key = GKey;
+    type Error = failure::Compat<GgezError>;
+    fn load(
+        key: Self::Key,
+        _store: &mut warmy::Storage<ggez::Context>,
+        ctx: &mut ggez::Context,
+    ) -> Result<warmy::Loaded<Self>, Self::Error>
+    {
+        debug!("Attempting to load: {:?}", key);
+        graphics::Font::new(ctx, key.0, 12)
+            .map(|x| warmy::Loaded::from(Font(x)))
             .map_err(|e| GgezError::from(e).compat())
     }
 }
