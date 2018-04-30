@@ -106,6 +106,7 @@ impl EventHandler for MainState {
         while timer::check_update_time(ctx, DESIRED_FPS) {
             self.scenes.update();
         }
+        self.scenes.world.assets.sync(ctx);
 
         Ok(())
     }

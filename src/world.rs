@@ -54,7 +54,8 @@ impl World {
             "Setting up resource path: {:?}",
             resource_pathbuf
         );
-        let opt = warmy::StoreOpt::default().set_root(resource_pathbuf);
+        let opt = warmy::StoreOpt::default()
+            .set_root(resource_pathbuf);
         let store = warmy::Store::new(opt)
             .expect("Could not create asset store?  Does the directory exist?");
 
