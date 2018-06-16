@@ -18,6 +18,8 @@ use error::*;
 /// warmy will only watch for reloads in one of them.  However, that isn't a huge
 /// problem: for development you generally want all your assets in one place to
 /// begin with, and for deployment you don't need the hotloading functionality.
+///
+/// TODO: With warmy 0.7 this should not be necessary, figure it out.
 fn warmy_to_ggez_path(path: &path::Path, root: &path::Path) -> path::PathBuf {
     let stripped_path = path.strip_prefix(root)
         .expect("warmy path is outside of the warmy store?  Should never happen.");
@@ -52,6 +54,7 @@ impl warmy::Load<ggez::Context> for Image {
         store: &mut warmy::Storage<ggez::Context>,
         ctx: &mut ggez::Context,
     ) -> Result<warmy::Loaded<Self>, Self::Error> {
+        println!("key: {:?}, path: {:?}", key, store.root());
         let path = warmy_to_ggez_path(key.as_path(), store.root());
         debug!("Loading image {:?} from file {:?}", path, key.as_path());
         graphics::Image::new(ctx, path)

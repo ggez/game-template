@@ -9,11 +9,9 @@ readme = "README.md"
 # Game stuff
 ggez = "0.4"
 ggez-goodies = { git = "https://github.com/ggez/ggez-goodies", branch = "master" }
-#ggez-goodies = { path = "/home/icefox/src/ggez-goodies" }
 specs = "0.10"
 specs-derive = "0.1"
 warmy = "0.7"
-#warmy = { git = "https://github.com/icefoxen/warmy", branch = "load-with-context2" }
 
 # Utility stuff
 log = "0.4"
