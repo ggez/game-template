@@ -9,9 +9,9 @@ readme = "README.md"
 # Game stuff
 ggez = "0.4"
 ggez-goodies = { git = "https://github.com/ggez/ggez-goodies", branch = "master" }
-specs = "0.10"
-specs-derive = "0.1"
-warmy = "0.7"
+specs = "0.12"
+specs-derive = "0.2"
+warmy = "0.10"
 
 # Utility stuff
 log = "0.4"

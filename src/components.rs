@@ -8,11 +8,11 @@ use specs::*;
 /// Components
 /// ///////////////////////////////////////////////////////////////////////
 #[derive(Clone, Debug, Component)]
-#[component(VecStorage)]
+#[storage(VecStorage)]
 pub struct Position(pub Point2);
 
 #[derive(Clone, Debug, Component)]
-#[component(VecStorage)]
+#[storage(VecStorage)]
 pub struct Motion {
     pub velocity: Vector2,
     pub acceleration: Vector2,
@@ -20,17 +20,17 @@ pub struct Motion {
 
 // Just a marker that a particular entity is the player.
 #[derive(Clone, Debug, Default, Component)]
-#[component(NullStorage)]
+#[storage(NullStorage)]
 pub struct Player;
 
 #[derive(Clone, Debug, Default, Component)]
-#[component(VecStorage)]
+#[storage(VecStorage)]
 pub struct Shot {
     pub damage: u32,
 }
 
 #[derive(Clone, Debug, Component)]
-#[component(HashMapStorage)]
+#[storage(HashMapStorage)]
 pub struct CBackgroundScroller {
     pub scroll_speed: Vector2,
 }
