@@ -4,16 +4,17 @@
 //! to every `Scene`: specs objects, input state, asset cache.
 
 use ggez;
-use ggez_goodies::input as ginput;
 use ggez::graphics::{Point2, Vector2};
+use ggez_goodies::input as ginput;
 use specs;
+use specs::Builder;
 
 use warmy;
 
 use std::path;
 
-use input;
 use components::*;
+use input;
 
 pub struct World {
     pub assets: warmy::Store<ggez::Context>,
