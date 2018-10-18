@@ -142,7 +142,7 @@ pub fn main() {
 
     // We add the CARGO_MANIFEST_DIR/resources to the filesystems paths so
     // we we look in the cargo project for files.
-    // And save it so we can feed there result into warmy
+    // And save it so we can feed the result into warmy
     let cargo_path: Option<path::PathBuf> = option_env!("CARGO_MANIFEST_DIR").map(|env_path| {
         let mut res_path = path::PathBuf::from(env_path);
         res_path.push("resources");
