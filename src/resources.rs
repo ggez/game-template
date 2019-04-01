@@ -2,106 +2,69 @@
 
 use std::path;
 
-use failure::{self, Fail};
-use ggez::{self, audio, graphics};
+use ggez::{self, graphics};
+use log::*;
 use warmy;
 
-use error::*;
+use crate::types::Error;
 
-/// Warmy hands our `load()` method an absolute path, while ggez takes absolute
-/// paths into its VFS directory.  Warmy needs to know the real absolute path so
-/// it can watch for reloads, so this function strips the path prefix of the warmy
-/// Store's root off of the given absolute path and turns it into the style of path
-/// that ggez expects.
-///
-/// Because of this, ggez will have several places that resources *may* live but
-/// warmy will only watch for reloads in one of them.  However, that isn't a huge
-/// problem: for development you generally want all your assets in one place to
-/// begin with, and for deployment you don't need the hotloading functionality.
-///
-/// TODO: With warmy 0.7 this should not be necessary, figure it out.
-fn warmy_to_ggez_path(path: &path::Path, root: &path::Path) -> path::PathBuf {
-    let stripped_path = path.strip_prefix(root)
-        .expect("warmy path is outside of the warmy store?  Should never happen.");
-    path::Path::new("/").join(stripped_path)
+/// Again, because `warmy` assumes direct filesystem dirs
+/// and ggez assumes all its resources live in a specific
+/// (relative) location, we make our own key type here which
+/// doesn't get `warmy`'s root path attached to it like its
+/// `SimpleKey` types do.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum Key {
+    Path(path::PathBuf),
 }
 
-/// Just a test asset that does nothing.
-#[derive(Debug, Copy, Clone)]
-pub struct TestAsset;
-
-impl<C> warmy::Load<C> for TestAsset {
-    type Key = warmy::key::LogicalKey;
-    type Error = failure::Compat<GgezError>;
-    fn load(
-        key: Self::Key,
-        _store: &mut warmy::Storage<C>,
-        _ctx: &mut C,
-    ) -> Result<warmy::Loaded<Self>, Self::Error> {
-        debug!("Loading test asset: {:?}", key);
-        Ok(TestAsset.into())
+impl From<&path::Path> for Key {
+    fn from(p: &path::Path) -> Self {
+        Key::Path(p.to_owned())
     }
 }
+
+impl Key {
+    pub fn from_path<P>(p: P) -> Self
+    where
+        P: AsRef<path::Path>,
+    {
+        use std::borrow::ToOwned;
+        Key::Path(p.as_ref().to_owned())
+    }
+}
+
+impl warmy::key::Key for Key {
+    fn prepare_key(self, _root: &path::Path) -> Self {
+        self
+    }
+}
+
+/// Store and Storage are different things in `warmy`; the `Store`
+/// is what actually stores things, and the `Storage` is I think
+/// a handle to it.
+pub type Store = warmy::Store<ggez::Context, Key>;
+type Storage = warmy::Storage<ggez::Context, Key>;
+pub type Loaded<T> = warmy::Loaded<T, Key>;
 
 /// A wrapper for a ggez Image, so we can implement warmy's `Load` trait on it.
 #[derive(Debug, Clone)]
 pub struct Image(pub graphics::Image);
-impl warmy::Load<ggez::Context> for Image {
-    type Key = warmy::FSKey;
-    type Error = failure::Compat<GgezError>;
+
+/// And, here actually tell Warmy how to load things.
+impl warmy::Load<ggez::Context, Key> for Image {
+    type Error = Error;
     fn load(
-        key: Self::Key,
-        store: &mut warmy::Storage<ggez::Context>,
+        key: Key,
+        _storage: &mut Storage,
         ctx: &mut ggez::Context,
-    ) -> Result<warmy::Loaded<Self>, Self::Error> {
-        println!("key: {:?}, path: {:?}", key, store.root());
-        let path = warmy_to_ggez_path(key.as_path(), store.root());
-        debug!("Loading image {:?} from file {:?}", path, key.as_path());
-        graphics::Image::new(ctx, path)
-            .map(|x| warmy::Loaded::from(Image(x)))
-            .map_err(|e| GgezError::from(e).compat())
-    }
-}
+    ) -> Result<Loaded<Self>, Self::Error> {
+        debug!("Loading image {:?}", key);
 
-/// A wrapper for a ggez SoundData, so we can implement warmy's `Load` trait on it.
-#[derive(Debug, Clone)]
-pub struct SoundData(pub audio::SoundData);
-impl warmy::Load<ggez::Context> for SoundData {
-    type Key = warmy::FSKey;
-    type Error = failure::Compat<GgezError>;
-    fn load(
-        key: Self::Key,
-        store: &mut warmy::Storage<ggez::Context>,
-        ctx: &mut ggez::Context,
-    ) -> Result<warmy::Loaded<Self>, Self::Error> {
-        let path = warmy_to_ggez_path(key.as_path(), store.root());
-        debug!("Loading sound {:?} from file {:?}", path, key.as_path());
-
-        audio::SoundData::new(ctx, path)
-            .map(|x| warmy::Loaded::from(SoundData(x)))
-            .map_err(|e| GgezError::from(e).compat())
-    }
-}
-
-/// A wrapper for a ggez Font, so we can implement warmy's `Load` trait on it.
-///
-/// Currently it just forces the font size to 12 pt; we should implement a specific
-/// key type for it that includes a font size.
-#[derive(Debug, Clone)]
-pub struct Font(pub graphics::Font);
-impl warmy::Load<ggez::Context> for Font {
-    type Key = warmy::FSKey;
-    type Error = failure::Compat<GgezError>;
-    fn load(
-        key: Self::Key,
-        store: &mut warmy::Storage<ggez::Context>,
-        ctx: &mut ggez::Context,
-    ) -> Result<warmy::Loaded<Self>, Self::Error> {
-        let path = warmy_to_ggez_path(key.as_path(), store.root());
-        debug!("Loading font {:?} from file {:?}", path, key.as_path());
-
-        graphics::Font::new(ctx, path, 12)
-            .map(|x| warmy::Loaded::from(Font(x)))
-            .map_err(|e| GgezError::from(e).compat())
+        match key {
+            Key::Path(path) => graphics::Image::new(ctx, path)
+                .map(|x| warmy::Loaded::from(Image(x)))
+                .map_err(|e| Error::GgezError(e)),
+        }
     }
 }

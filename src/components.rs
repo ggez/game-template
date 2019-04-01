@@ -1,16 +1,18 @@
-//use ggez::nalgebra as na;
-use ggez::graphics::*;
+use crate::types::*;
+
 use specs::*;
+use specs_derive::*;
 
-//use util::*;
+// ///////////////////////////////////////////////////////////////////////
+// Components
+// ///////////////////////////////////////////////////////////////////////
 
-/// ///////////////////////////////////////////////////////////////////////
-/// Components
-/// ///////////////////////////////////////////////////////////////////////
+/// A position in the game world.
 #[derive(Clone, Debug, Component)]
 #[storage(VecStorage)]
 pub struct Position(pub Point2);
 
+/// Motion in the game world.
 #[derive(Clone, Debug, Component)]
 #[storage(VecStorage)]
 pub struct Motion {
@@ -18,7 +20,7 @@ pub struct Motion {
     pub acceleration: Vector2,
 }
 
-// Just a marker that a particular entity is the player.
+/// Just a marker that a particular entity is the player.
 #[derive(Clone, Debug, Default, Component)]
 #[storage(NullStorage)]
 pub struct Player;
@@ -29,14 +31,9 @@ pub struct Shot {
     pub damage: u32,
 }
 
-#[derive(Clone, Debug, Component)]
-#[storage(HashMapStorage)]
-pub struct CBackgroundScroller {
-    pub scroll_speed: Vector2,
-}
-
-impl CBackgroundScroller {
-    //pub fn new() -> Self {
-    //    CBackgroundScroller { scroll_speed: Vector2::new(0.0, -0.01) }
-    //}
+pub fn register_components(specs_world: &mut World) {
+    specs_world.register::<Position>();
+    specs_world.register::<Motion>();
+    specs_world.register::<Shot>();
+    specs_world.register::<Player>();
 }

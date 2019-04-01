@@ -1,7 +1,6 @@
 //! specs systems.
+use crate::components::*;
 use specs::{self, Join};
-
-use components::*;
 
 pub struct MovementSystem;
 

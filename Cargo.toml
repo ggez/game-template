@@ -4,17 +4,19 @@ version = "0.1.0"
 authors = ["Simon Heath <icefoxen@gmail.com>"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
+edition = "2018"
+
+[profile.dev]
+opt-level = 1
+
 
 [dependencies]
-# Game stuff
-ggez = "0.4"
-ggez-goodies = { git = "https://github.com/ggez/ggez-goodies", branch = "master" }
-specs = "0.12"
-specs-derive = "0.2"
-warmy = "0.10"
-
-# Utility stuff
+ggez = "0.5.0-rc.1"
+ggez-goodies = { git = "https://github.com/ggez/ggez-goodies.git", branch="devel" }
+euclid = {version = "0.19", features=["mint"]}
+warmy = "0.11"
 log = "0.4"
 fern = {version = "0.5", features = ["colored"] }
 chrono = "0.4"
-failure = "0.1"
+specs = "0.14"
+specs-derive = "0.4"
