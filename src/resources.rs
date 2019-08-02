@@ -29,7 +29,6 @@ impl Key {
     where
         P: AsRef<path::Path>,
     {
-        use std::borrow::ToOwned;
         Key::Path(p.as_ref().to_owned())
     }
 }
