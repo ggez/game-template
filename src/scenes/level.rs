@@ -26,7 +26,9 @@ impl LevelScene {
             .get::<resources::Image>(&resources::Key::from_path("/images/kiwi.png"), ctx)
             .unwrap();
 
-        let dispatcher = Self::register_systems();
+        let mut dispatcher = Self::register_systems();
+        dispatcher.setup(&mut world.specs_world.res);
+
         LevelScene {
             done,
             kiwi,
