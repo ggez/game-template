@@ -24,7 +24,7 @@ impl MainState {
     fn new(ctx: &mut Context, resource_path: &path::Path) -> Self {
         let world = world::World::new(resource_path);
         let mut scenestack = scenes::Stack::new(ctx, world);
-        let initial_scene = Box::new(scenes::level::LevelScene::new(ctx, &mut scenestack.world));
+        let initial_scene = Box::new(scenes::menu::MenuScene::new(ctx, &mut scenestack.world));
         scenestack.push(initial_scene);
 
         Self {
