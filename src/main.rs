@@ -60,6 +60,7 @@ impl event::EventHandler for MainState {
     ) {
         if let Some(ev) = self.input_binding.resolve(keycode) {
             self.scenes.input(ev, true);
+            self.scenes.world.input.update_effect(ev, true);
         }
     }
 
@@ -71,6 +72,7 @@ impl event::EventHandler for MainState {
     ) {
         if let Some(ev) = self.input_binding.resolve(keycode) {
             self.scenes.input(ev, false);
+            self.scenes.world.input.update_effect(ev, false);
         }
     }
 }
